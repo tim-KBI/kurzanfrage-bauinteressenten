@@ -546,6 +546,10 @@
     <p class="sub">Auswahl anklicken.</p>
     <div class="tiles" id="grundstueckTiles" role="group" aria-label="Grundstück vorhanden"></div>
     <p class="required-note">* Pflichtangabe</p>
+    <div class="other-field field" id="grundstueckSucheWrap" hidden>
+      <label for="f-grundstueck-suche-ort">In welchen Orten bzw. in welchem Umkreis suchen Sie? (optional)</label>
+      <input type="text" id="f-grundstueck-suche-ort" data-key="grundstueckSucheOrt" placeholder="z. B. München und Umkreis 20 km" />
+    </div>
   </section>
 
   <!-- 03 Herkunft -->
@@ -713,6 +717,7 @@
     }
     if (groupKey === "grundstueck") {
       state.grundstueck = id;
+      document.getElementById("grundstueckSucheWrap").hidden = id !== "suche";
     }
     if (groupKey === "type") {
       var idx = state.types.indexOf(id);
@@ -798,6 +803,9 @@
     lines.push("E-Mail: " + (d.mail || "—"));
     lines.push("");
     lines.push("Grundstück vorhanden: " + (grundstueckLabels[d._grundstueck] || "—"));
+    if (d._grundstueck === "suche") {
+      lines.push("  Gesuchte Orte/Umkreis: " + (d.grundstueckSucheOrt || "—"));
+    }
     lines.push("");
     lines.push("Herkunft: " + (referralLabels[d._referral] || "—") + (d.referralOther ? " (" + d.referralOther + ")" : ""));
     if (d._referral === "messe") {
@@ -827,7 +835,7 @@
     var complete = true;
     document.querySelectorAll("[data-key]").forEach(function (elm) {
       var key = elm.getAttribute("data-key");
-      if (key === "mobil" || key === "festnetz") return;
+      if (key === "mobil" || key === "festnetz" || key === "grundstueckSucheOrt") return;
       if (!isVisible(elm)) return;
       if (elm.type === "checkbox") {
         if (!elm.checked) complete = false;
@@ -941,6 +949,7 @@
         "Festnetz": d.festnetz || "—",
         "E-Mail": d.mail || "—",
         "Grundstueck vorhanden": grundstueckLabels[d._grundstueck] || "—",
+        "Grundstueck gesuchte Orte/Umkreis": d._grundstueck === "suche" ? (d.grundstueckSucheOrt || "—") : "—",
         "Herkunft": referralLabels[d._referral] || "—",
         "Bauvorhaben": typeNames || "—",
         "Vollstaendige Antworten": buildSummaryText()
