@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kurzanfrage Bauinteressenten</title>
+<style>
+  :root {
+    --bg: #f2f3f4;
+    --paper: #ffffff;
+    --ink: #1c2226;
+    --ink-soft: #565f66;
+    --ink-faint: #8a929a;
+    --line: #d8dce0;
+    --line-soft: #e7eaed;
+    --accent: #2f5a7d;
+    --accent-ink: #ffffff;
+    --accent-tint: #e7eef4;
+    --accent-tint-line: #b9cddc;
+    --amber: #b5791f;
+    --amber-tint: #faf1e2;
+    --good: #2e7d4f;
+    --good-tint: #e7f3ec;
+    --focus: #2f5a7d;
+    --radius: 10px;
+    --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14181b;
+    --paper: #1b2024;
+    --ink: #eceef0;
+    --ink-soft: #a9b1b8;
+    --ink-faint: #737b82;
+    --line: #333a40;
+    --line-soft: #262c31;
+    --accent: #6fa2c9;
+    --accent-ink: #0e1a22;
+    --accent-tint: #202d36;
+    --accent-tint-line: #395163;
+    --amber: #d9a54c;
+    --amber-tint: #2c2416;
+    --good: #6fbf91;
+    --good-tint: #16261d;
+    --focus: #6fa2c9;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181b;
+      --paper: #1b2024;
+      --ink: #eceef0;
+      --ink-soft: #a9b1b8;
+      --ink-faint: #737b82;
+      --line: #333a40;
+      --line-soft: #262c31;
+      --accent: #6fa2c9;
+      --accent-ink: #0e1a22;
+      --accent-tint: #202d36;
+      --accent-tint-line: #395163;
+      --amber: #d9a54c;
+      --amber-tint: #2c2416;
+      --good: #6fbf91;
+      --good-tint: #16261d;
+      --focus: #6fa2c9;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+  }
+
+  body {
+    padding: 40px 20px 120px;
+  }
+
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .masthead {
+    margin-bottom: 20px;
+  }
+
+  .masthead .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .masthead h1 {
+    font-size: clamp(26px, 4vw, 34px);
+    line-height: 1.15;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .masthead p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 56ch;
+    line-height: 1.55;
+  }
+
+  .success-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--good-tint);
+    border: 1px solid var(--good);
+    color: var(--good);
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .success-banner[hidden] { display: none; }
+
+  section.card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+    animation: reveal 0.35s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    section.card { animation: none; }
+  }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card[hidden] { display: none; }
+
+  .step-label {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+  }
+
+  .card h2 {
+    font-size: 17px;
+    margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+
+  .card .sub {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    margin: 0 0 18px;
+    line-height: 1.5;
+  }
+
+  .required-note {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  /* Tile grid */
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 10px;
+  }
+
+  .tile {
+    position: relative;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 14px 12px;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--sans);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.3;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 68px;
+  }
+
+  .tile:hover { border-color: var(--accent-tint-line); }
+
+  .tile .icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .tile .label { font-weight: 600; }
+
+  .tile[aria-pressed="true"] {
+    border-color: var(--accent);
+    background: var(--accent-tint);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .tile[aria-pressed="true"]::after {
+    content: "✓";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tile:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .other-field {
+    margin-top: 12px;
+  }
+
+  /* Form fields */
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+
+  .field input[type="text"],
+  .field input[type="tel"],
+  .field input[type="email"],
+  .field textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 10px 12px;
+    font-size: 14.5px;
+    color: var(--ink);
+    font-family: var(--sans);
+    resize: vertical;
+  }
+
+  .field textarea { min-height: 56px; line-height: 1.45; }
+
+  .row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 520px) {
+    .row2 { grid-template-columns: 1fr; }
+  }
+
+  .qgroup-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+
+  .messe-callout {
+    border: 1px solid var(--amber-tint);
+    background: var(--amber-tint);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 14px;
+  }
+
+  .messe-callout .qgroup-title { color: var(--amber); }
+
+  /* Privacy */
+  .consent-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .consent-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .consent-row label {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .consent-row a {
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* Footer actions */
+  .actions {
+    position: sticky;
+    bottom: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .actions[hidden] { display: none; }
+
+  :root[data-theme="dark"] .actions {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .actions {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+  }
+
+  button {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 7px;
+    padding: 11px 18px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  button.primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+
+  button.primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  button.ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--line);
+  }
+
+  button.ghost:hover { border-color: var(--ink-faint); }
+  button.ghost:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .actions-note {
+    flex-basis: 100%;
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 17, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 50;
+  }
+
+  .modal-backdrop[hidden] { display: none; }
+
+  .modal {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 28px;
+  }
+
+  .modal h2 {
+    margin: 0 0 14px;
+    font-size: 18px;
+  }
+
+  .modal h3 {
+    font-size: 14px;
+    margin: 20px 0 6px;
+  }
+
+  .modal p {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+
+  .modal .close-row {
+    margin-top: 20px;
+    text-align: right;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 18px;
+    border-radius: 7px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 60;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .toast.show { opacity: 1; }
+
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" type="button">◐ Ansicht</button>
+
+<div class="sheet">
+  <div class="masthead">
+    <span class="kicker">Systema Bau · Schnellkontakt</span>
+    <h1>Kurzanfrage für Bauinteressenten</h1>
+    <p>Kurzes Kontaktformular für die erste Anfrage. Wählen Sie Ihr Bauvorhaben aus und senden Sie uns unverbindlich Ihre Angaben – wir melden uns zeitnah bei Ihnen. Mit * markierte Angaben sind Pflichtfelder; bei der Telefonnummer genügt Mobil oder Festnetz.</p>
+  </div>
+
+  <div class="success-banner" id="successBanner" hidden>✓ Vielen Dank! Ihre Angaben wurden erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.</div>
+
+  <!-- 01 Kontakt -->
+  <section class="card">
+    <div class="step-label"><span class="step-num">01</span></div>
+    <h2>Kontaktdaten</h2>
+    <p class="sub">Für Rückfragen und die Terminbestätigung.</p>
+    <div class="row2">
+      <div class="field">
+        <label for="f-name">Name *</label>
+        <input type="text" id="f-name" data-key="name" placeholder="Vor- und Nachname" />
+      </div>
+      <div class="field">
+        <label for="f-strasse">Straße und Hausnummer *</label>
+        <input type="text" id="f-strasse" data-key="strasse" placeholder="Musterstraße 12" />
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="f-mobil">Mobil *</label>
+        <input type="tel" id="f-mobil" data-key="mobil" placeholder="z. B. 0170 1234567" />
+      </div>
+      <div class="field">
+        <label for="f-festnetz">Festnetz *</label>
+        <input type="tel" id="f-festnetz" data-key="festnetz" placeholder="z. B. 08151 123456" />
+      </div>
+    </div>
+    <p class="required-note">* Bitte mindestens eine Telefonnummer angeben (Mobil oder Festnetz).</p>
+    <div class="row2">
+      <div class="field">
+        <label for="f-mail">E-Mail *</label>
+        <input type="email" id="f-mail" data-key="mail" placeholder="name@beispiel.de" />
+      </div>
+      <div class="field">
+        <label for="f-ort">Ort / Grundstücksregion *</label>
+        <input type="text" id="f-ort" data-key="ort" placeholder="PLZ, Ort" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Grundstück -->
+  <section class="card">
+    <div class="step-label"><span class="step-num">02</span></div>
+    <h2>Ist bereits ein Grundstück vorhanden?</h2>
+    <p class="sub">Auswahl anklicken.</p>
+    <div class="tiles" id="grundstueckTiles" role="group" aria-label="Grundstück vorhanden"></div>
+    <p class="required-note">* Pflichtangabe</p>
+  </section>
+
+  <!-- 03 Herkunft -->
+  <section class="card">
+    <div class="step-label"><span class="step-num">03</span></div>
+    <h2>Wie sind Sie auf uns aufmerksam geworden?</h2>
+    <p class="sub">Auswahl anklicken.</p>
+    <div class="tiles" id="referralTiles" role="group" aria-label="Herkunft"></div>
+    <p class="required-note">* Pflichtangabe</p>
+    <div class="other-field field" id="referralOtherWrap" hidden>
+      <label for="f-referral-other">Bitte kurz beschreiben *</label>
+      <input type="text" id="f-referral-other" data-key="referralOther" placeholder="z. B. über Bauträger empfohlen" />
+    </div>
+
+    <div class="messe-callout" id="messeCallout" hidden>
+      <p class="qgroup-title">Messe-Rückblick</p>
+      <div class="field">
+        <label for="f-messe-1">Was hat Ihnen auf der Messe am besten gefallen? *</label>
+        <textarea id="f-messe-1" data-key="messeGefallen"></textarea>
+      </div>
+      <div class="field">
+        <label for="f-messe-2">Welches Haus / Modell hat am besten zu Ihren Vorstellungen gepasst? *</label>
+        <textarea id="f-messe-2" data-key="messeHaus"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Bauvorhaben -->
+  <section class="card">
+    <div class="step-label"><span class="step-num">04</span></div>
+    <h2>Um was für ein Bauvorhaben handelt es sich?</h2>
+    <p class="sub">Mehrfachauswahl möglich, z. B. wenn mehrere Leistungen gewünscht sind.</p>
+    <div class="tiles" id="typeTiles" role="group" aria-label="Bauvorhaben"></div>
+    <p class="required-note">* Pflichtangabe</p>
+    <div class="other-field field" id="typeOtherWrap" hidden>
+      <label for="f-type-other">Bitte kurz beschreiben *</label>
+      <input type="text" id="f-type-other" data-key="typeOther" placeholder="z. B. Garage mit Wohneinheit" />
+    </div>
+  </section>
+
+  <!-- 05 Datenschutz -->
+  <section class="card" id="sec-privacy" hidden>
+    <div class="step-label"><span class="step-num">05</span></div>
+    <h2>Datenschutz</h2>
+    <p class="sub">Bitte vor dem Absenden bestätigen.</p>
+    <div class="consent-row">
+      <input type="checkbox" id="f-consent" />
+      <label for="f-consent">Der/die Interessent:in stimmt der <a id="openPrivacy" role="button" tabindex="0">Datenschutzerklärung</a> zu, insbesondere der Verarbeitung der oben genannten Angaben zur Bearbeitung der Anfrage.</label>
+    </div>
+  </section>
+</div>
+
+<div class="actions" id="actions" hidden>
+  <button class="primary" id="btnSend" type="button" disabled>Anfrage absenden</button>
+  <button class="ghost" id="btnCopy" type="button">Als Text kopieren</button>
+  <button class="ghost" id="btnMailFallback" type="button" disabled>Per E-Mail-Programm senden</button>
+  <button class="ghost" id="btnReset" type="button">Formular leeren</button>
+  <span class="actions-note">Ihre Angaben werden direkt und sicher an unser Team übermittelt. Sollte das nicht funktionieren, nutzen Sie bitte die Alternative über Ihr E-Mail-Programm. Der Button wird erst aktiv, wenn alle Pflichtangaben ausgefüllt sind.</span>
+</div>
+
+<div class="modal-backdrop" id="privacyModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+    <h2 id="privacyTitle">Datenschutzerklärung</h2>
+    <p>Nachfolgend werden Sie darüber informiert, welche Art von Daten erfasst und zu welchem Zweck sie erhoben werden:</p>
+    <h3>1. Datenübermittlung/Datenprotokollierung</h3>
+    <p>Beim Besuch dieser Seite verzeichnet der Web-Server automatisch Log-Files, die keiner bestimmten Person zugeordnet werden können. Diese Daten beinhalten zum Beispiel den Browsertyp und -Version, verwendetes Betriebssystem, Referrer URL (die zuvor besuchte Seite), IP-Adresse des anfragenden Rechners, Zugriffsdatum und -Uhrzeit der Serveranfrage und die Dateianfrage des Client (Dateiname und URL). Diese Daten werden nur zum Zweck der statistischen Auswertung gesammelt. Eine Weitergabe an Dritte findet nicht statt.</p>
+    <h3>2. Nutzung persönlicher Daten</h3>
+    <p>Persönliche Daten werden nur erhoben oder verarbeitet, wenn Sie diese Angaben freiwillig zum Beispiel im Rahmen einer Anfrage mitteilen. Sofern keine erforderlichen Gründe im Zusammenhang mit einer Geschäftsabwicklung bestehen, können Sie jederzeit die zuvor erteilte Genehmigung Ihrer persönlichen Datenspeicherung mit sofortiger Wirkung schriftlich widerrufen. Ihre Daten werden nicht an Dritte weitergegeben, es sei denn, eine Weitergabe ist aufgrund gesetzlicher Vorschriften erforderlich.</p>
+    <h3>3. Auskunft, Änderung und Löschung Ihrer Daten</h3>
+    <p>Gemäß geltendem Recht können Sie jederzeit bei uns schriftlich nachfragen, ob und welche personenbezogenen Daten bei uns über Sie gespeichert sind. Eine entsprechende Mitteilung hierzu erhalten Sie umgehend.</p>
+    <h3>4. Änderungen dieser Datenschutzbestimmungen</h3>
+    <p>Wir werden diese Richtlinien zum Schutz Ihrer persönlichen Daten von Zeit zu Zeit aktualisieren.</p>
+    <div class="close-row"><button class="ghost" id="closePrivacy" type="button">Schließen</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================================================
+     E-MAIL-VERSAND EINRICHTEN (kostenlos über Web3Forms):
+     Nutzt denselben Zugangsschlüssel wie das ausführliche Formular
+     (index.html) – beide senden an dieselbe hinterlegte E-Mail-Adresse.
+     ============================================================ */
+  var WEB3FORMS_ACCESS_KEY = "c3f24766-3c61-410c-a5af-0e741e58c250";
+
+  var STORAGE_KEY = "systemabau_kurzanfrage_v1";
+
+  var referralOptions = [
+    { id: "internet", icon: "🌐", label: "Internet" },
+    { id: "bekannte", icon: "🗣️", label: "Bekannte / Empfehlung" },
+    { id: "werbung", icon: "📣", label: "Werbung" },
+    { id: "messe", icon: "🏠", label: "Messe" },
+    { id: "zeitung", icon: "📰", label: "Zeitung" },
+    { id: "sonstiges", icon: "✏️", label: "Sonstiges" }
+  ];
+
+  var grundstueckOptions = [
+    { id: "ja", icon: "✅", label: "Ja" },
+    { id: "nein", icon: "❌", label: "Nein" },
+    { id: "suche", icon: "🔍", label: "Suche Grundstück" }
+  ];
+
+  var typeOptions = [
+    { id: "neubau", icon: "🏗️", label: "Neubau" },
+    { id: "modulbau", icon: "📦", label: "Modulbau" },
+    { id: "tinyhouse", icon: "🏕️", label: "Tiny House" },
+    { id: "anbau", icon: "➕", label: "Anbau" },
+    { id: "aufstockung", icon: "⬆️", label: "Aufstockung" },
+    { id: "sanierung", icon: "🧱", label: "Sanierung" },
+    { id: "umbau", icon: "🪚", label: "Umbau" },
+    { id: "planung", icon: "📐", label: "Planung" },
+    { id: "sonstiges", icon: "✏️", label: "Sonstiges" }
+  ];
+
+  var typeLabels = {};
+  typeOptions.forEach(function (t) { typeLabels[t.id] = t.label; });
+  var referralLabels = {};
+  referralOptions.forEach(function (r) { referralLabels[r.id] = r.label; });
+  var grundstueckLabels = {};
+  grundstueckOptions.forEach(function (g) { grundstueckLabels[g.id] = g.label; });
+
+  var state = { referral: null, grundstueck: null, types: [] };
+
+  function el(tag, attrs, children) {
+    var node = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(function (k) {
+        if (k === "text") node.textContent = attrs[k];
+        else node.setAttribute(k, attrs[k]);
+      });
+    }
+    (children || []).forEach(function (c) { node.appendChild(c); });
+    return node;
+  }
+
+  function renderTiles(container, options, groupKey, multiSelect) {
+    container.innerHTML = "";
+    options.forEach(function (opt) {
+      var tile = el("button", { type: "button", class: "tile", "aria-pressed": "false", "data-id": opt.id });
+      tile.appendChild(el("span", { class: "icon", text: opt.icon }));
+      tile.appendChild(el("span", { class: "label", text: opt.label }));
+      tile.addEventListener("click", function () {
+        if (multiSelect) {
+          var nowPressed = tile.getAttribute("aria-pressed") !== "true";
+          tile.setAttribute("aria-pressed", nowPressed ? "true" : "false");
+        } else {
+          container.querySelectorAll(".tile").forEach(function (t) { t.setAttribute("aria-pressed", "false"); });
+          tile.setAttribute("aria-pressed", "true");
+        }
+        onSelect(groupKey, opt.id);
+      });
+      container.appendChild(tile);
+    });
+  }
+
+  function onSelect(groupKey, id) {
+    if (groupKey === "referral") {
+      state.referral = id;
+      document.getElementById("referralOtherWrap").hidden = id !== "sonstiges";
+      document.getElementById("messeCallout").hidden = id !== "messe";
+    }
+    if (groupKey === "grundstueck") {
+      state.grundstueck = id;
+    }
+    if (groupKey === "type") {
+      var idx = state.types.indexOf(id);
+      if (idx === -1) state.types.push(id); else state.types.splice(idx, 1);
+      document.getElementById("typeOtherWrap").hidden = state.types.indexOf("sonstiges") === -1;
+      if (state.types.length) revealFinalSections(); else hideFinalSections();
+    }
+    persist();
+    updateSendState();
+  }
+
+  function revealFinalSections() {
+    document.getElementById("sec-privacy").hidden = false;
+    document.getElementById("actions").hidden = false;
+  }
+
+  function hideFinalSections() {
+    document.getElementById("sec-privacy").hidden = true;
+    document.getElementById("actions").hidden = true;
+  }
+
+  function collectAnswers() {
+    var data = {};
+    document.querySelectorAll("[data-key]").forEach(function (elm) {
+      var key = elm.getAttribute("data-key");
+      if (elm.type === "checkbox") data[key] = elm.checked;
+      else data[key] = elm.value;
+    });
+    data._referral = state.referral;
+    data._grundstueck = state.grundstueck;
+    data._types = state.types;
+    return data;
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectAnswers()));
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  function restore() {
+    var raw;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return; }
+    if (!raw) return;
+    var data;
+    try { data = JSON.parse(raw); } catch (e) { return; }
+
+    if (data._referral) {
+      var rTile = document.querySelector('#referralTiles .tile[data-id="' + data._referral + '"]');
+      if (rTile) rTile.click();
+    }
+    if (data._grundstueck) {
+      var gTile = document.querySelector('#grundstueckTiles .tile[data-id="' + data._grundstueck + '"]');
+      if (gTile) gTile.click();
+    }
+    if (data._types && data._types.length) {
+      data._types.forEach(function (id) {
+        var tTile = document.querySelector('#typeTiles .tile[data-id="' + id + '"]');
+        if (tTile) tTile.click();
+      });
+    }
+    Object.keys(data).forEach(function (key) {
+      if (key.charAt(0) === "_") return;
+      var elm = document.querySelector('[data-key="' + key + '"]');
+      if (!elm) return;
+      if (elm.type === "checkbox") elm.checked = data[key];
+      else elm.value = data[key];
+    });
+    updateSendState();
+  }
+
+  function buildSummaryText() {
+    var d = collectAnswers();
+    var typeNames = (d._types || []).map(function (id) { return typeLabels[id]; }).join(", ");
+    var lines = [];
+    lines.push("KURZANFRAGE BAUINTERESSENT — " + new Date().toLocaleDateString("de-DE"));
+    lines.push("");
+    lines.push("Name: " + (d.name || "—"));
+    lines.push("Straße und Hausnummer: " + (d.strasse || "—"));
+    lines.push("Ort/Region: " + (d.ort || "—"));
+    lines.push("Mobil: " + (d.mobil || "—"));
+    lines.push("Festnetz: " + (d.festnetz || "—"));
+    lines.push("E-Mail: " + (d.mail || "—"));
+    lines.push("");
+    lines.push("Grundstück vorhanden: " + (grundstueckLabels[d._grundstueck] || "—"));
+    lines.push("");
+    lines.push("Herkunft: " + (referralLabels[d._referral] || "—") + (d.referralOther ? " (" + d.referralOther + ")" : ""));
+    if (d._referral === "messe") {
+      lines.push("  Messe – am besten gefallen: " + (d.messeGefallen || "—"));
+      lines.push("  Messe – passendes Haus/Modell: " + (d.messeHaus || "—"));
+    }
+    lines.push("");
+    lines.push("Bauvorhaben: " + (typeNames || "—") + (d.typeOther ? " (" + d.typeOther + ")" : ""));
+    lines.push("");
+    lines.push("Datenschutzerklärung akzeptiert: " + (d.consent ? "Ja" : "Nein"));
+    return lines.join("\n");
+  }
+
+  function isVisible(elm) {
+    return !elm.closest("[hidden]");
+  }
+
+  function isFormComplete() {
+    if (!state.referral) return false;
+    if (!state.grundstueck) return false;
+    if (!state.types.length) return false;
+
+    var mobil = document.querySelector('[data-key="mobil"]');
+    var festnetz = document.querySelector('[data-key="festnetz"]');
+    if (!((mobil && mobil.value.trim()) || (festnetz && festnetz.value.trim()))) return false;
+
+    var complete = true;
+    document.querySelectorAll("[data-key]").forEach(function (elm) {
+      var key = elm.getAttribute("data-key");
+      if (key === "mobil" || key === "festnetz") return;
+      if (!isVisible(elm)) return;
+      if (elm.type === "checkbox") {
+        if (!elm.checked) complete = false;
+        return;
+      }
+      if (!String(elm.value || "").trim()) complete = false;
+    });
+    return complete;
+  }
+
+  function updateSendState() {
+    var ready = isFormComplete();
+    document.getElementById("btnSend").disabled = !ready;
+    document.getElementById("btnMailFallback").disabled = !ready;
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function () { t.classList.remove("show"); }, 3200);
+  }
+
+  function setSending(isSending) {
+    var btn = document.getElementById("btnSend");
+    btn.textContent = isSending ? "Wird gesendet…" : "Anfrage absenden";
+    updateSendState();
+    if (isSending) btn.disabled = true;
+  }
+
+  function showSuccess() {
+    var banner = document.getElementById("successBanner");
+    banner.hidden = false;
+    banner.scrollIntoView({ behavior: "smooth", block: "center" });
+    var btn = document.getElementById("btnSend");
+    btn.disabled = true;
+    btn.textContent = "Gesendet ✓";
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    renderTiles(document.getElementById("referralTiles"), referralOptions, "referral", false);
+    renderTiles(document.getElementById("grundstueckTiles"), grundstueckOptions, "grundstueck", false);
+    renderTiles(document.getElementById("typeTiles"), typeOptions, "type", true);
+
+    document.getElementById("f-consent").setAttribute("data-key", "consent");
+
+    document.body.addEventListener("input", function (e) {
+      if (e.target.hasAttribute("data-key")) {
+        persist();
+        updateSendState();
+      }
+    });
+    document.getElementById("f-consent").addEventListener("change", updateSendState);
+
+    document.getElementById("openPrivacy").addEventListener("click", function () {
+      document.getElementById("privacyModal").hidden = false;
+    });
+    document.getElementById("openPrivacy").addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); document.getElementById("privacyModal").hidden = false; }
+    });
+    document.getElementById("closePrivacy").addEventListener("click", function () {
+      document.getElementById("privacyModal").hidden = true;
+    });
+    document.getElementById("privacyModal").addEventListener("click", function (e) {
+      if (e.target.id === "privacyModal") document.getElementById("privacyModal").hidden = true;
+    });
+
+    document.getElementById("btnCopy").addEventListener("click", function () {
+      var text = buildSummaryText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          showToast("In die Zwischenablage kopiert");
+        }, function () {
+          showToast("Kopieren nicht möglich");
+        });
+      } else {
+        showToast("Kopieren nicht möglich");
+      }
+    });
+
+    document.getElementById("btnMailFallback").addEventListener("click", function () {
+      if (document.getElementById("btnMailFallback").disabled) return;
+      var d = collectAnswers();
+      var subject = "Kurzanfrage Bauinteressent" + (d.name ? " – " + d.name : "");
+      var body = buildSummaryText();
+      var mailto = "mailto:t.pauli@systema-bau.de?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+      window.location.href = mailto;
+    });
+
+    document.getElementById("btnSend").addEventListener("click", function () {
+      if (document.getElementById("btnSend").disabled) return;
+
+      if (WEB3FORMS_ACCESS_KEY.indexOf("DEIN_") === 0) {
+        showToast("Bitte zuerst den Web3Forms-Zugangsschlüssel im Code hinterlegen.");
+        return;
+      }
+
+      var d = collectAnswers();
+      var typeNames = (d._types || []).map(function (id) { return typeLabels[id]; }).join(", ");
+
+      var payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: "Neue Kurzanfrage – " + (typeNames || "Bauvorhaben") + (d.name ? " – " + d.name : ""),
+        from_name: d.name || "Bauinteressent (Kurzformular)",
+        email: d.mail || "",
+        "Name": d.name || "—",
+        "Straße": d.strasse || "—",
+        "Ort": d.ort || "—",
+        "Mobil": d.mobil || "—",
+        "Festnetz": d.festnetz || "—",
+        "E-Mail": d.mail || "—",
+        "Grundstueck vorhanden": grundstueckLabels[d._grundstueck] || "—",
+        "Herkunft": referralLabels[d._referral] || "—",
+        "Bauvorhaben": typeNames || "—",
+        "Vollstaendige Antworten": buildSummaryText()
+      };
+
+      setSending(true);
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) {
+          return res.json().then(function (json) { return { ok: res.ok, json: json }; });
+        })
+        .then(function (result) {
+          setSending(false);
+          if (result.ok && result.json && result.json.success) {
+            showSuccess();
+          } else {
+            showToast("Senden fehlgeschlagen. Bitte alternativ den E-Mail-Button nutzen.");
+          }
+        })
+        .catch(function () {
+          setSending(false);
+          showToast("Senden fehlgeschlagen (keine Verbindung). Bitte alternativ den E-Mail-Button nutzen.");
+        });
+    });
+
+    document.getElementById("btnReset").addEventListener("click", function () {
+      if (!confirm("Formular wirklich leeren? Alle Eingaben gehen verloren.")) return;
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      window.location.reload();
+    });
+
+    document.getElementById("themeToggle").addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.getAttribute("data-theme");
+      var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var effectiveDark = current ? current === "dark" : prefersDark;
+      root.setAttribute("data-theme", effectiveDark ? "light" : "dark");
+    });
+
+    restore();
+  });
+
+  window.addEventListener("pageshow", function (event) {
+    if (!event.persisted) return;
+    var banner = document.getElementById("successBanner");
+    if (banner) banner.hidden = true;
+    var btn = document.getElementById("btnSend");
+    if (btn) btn.textContent = "Anfrage absenden";
+    updateSendState();
+  });
+})();
+</script>
+</body>
+</html>
