@@ -46,27 +46,6 @@
     --focus: #6fa2c9;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #14181b;
-      --paper: #1b2024;
-      --ink: #eceef0;
-      --ink-soft: #a9b1b8;
-      --ink-faint: #737b82;
-      --line: #333a40;
-      --line-soft: #262c31;
-      --accent: #6fa2c9;
-      --accent-ink: #0e1a22;
-      --accent-tint: #202d36;
-      --accent-tint-line: #395163;
-      --amber: #d9a54c;
-      --amber-tint: #2c2416;
-      --good: #6fbf91;
-      --good-tint: #16261d;
-      --focus: #6fa2c9;
-    }
-  }
-
   * { box-sizing: border-box; }
 
   html, body {
@@ -361,12 +340,6 @@
 
   :root[data-theme="dark"] .actions {
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .actions {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
   }
 
   button {
@@ -986,10 +959,8 @@
 
     document.getElementById("themeToggle").addEventListener("click", function () {
       var root = document.documentElement;
-      var current = root.getAttribute("data-theme");
-      var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      var effectiveDark = current ? current === "dark" : prefersDark;
-      root.setAttribute("data-theme", effectiveDark ? "light" : "dark");
+      var isDark = root.getAttribute("data-theme") === "dark";
+      root.setAttribute("data-theme", isDark ? "light" : "dark");
     });
 
     restore();
